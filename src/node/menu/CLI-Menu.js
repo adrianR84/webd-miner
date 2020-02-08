@@ -66,14 +66,14 @@ class CLI {
             case '7': //  Set Mining Address
                 await this.setMiningAddress();
                 break;
-            /*case '8': //  Start Mining
+            case '8': //  Start Mining
                 await this.startMining();
                 break;
             case '9': //  Start Mining Instantly
                 await this.startMining(true);
-                break;*/
+                break;
             case '10': // Mining Pool: Start Mining in a Pool
-                await this.startMiningInsidePool('1');
+                await this.startMiningInsidePool();
                 break;
             case '10-2': // Mining Pool: Start Mining in a Pool
                 await this.startMiningInsidePool('2');
@@ -466,6 +466,57 @@ class CLI {
 
     }
 
+
+    async startMiningInsidePool() {
+
+        Log.info('Mining inside a POOL', Log.LOG_TYPE.POOLS);
+
+        consts.SETTINGS.NODE.PORT = consts.SETTINGS.NODE.MINER_POOL_PORT;
+
+        await this._callCallbackBlockchainSync(undefined, async () => {
+
+            try {
+
+                let getNewLink = true;
+
+                if (typeof Blockchain.MinerPoolManagement.minerPoolSettings.poolURL === "string" && Blockchain.MinerPoolManagement.minerPoolSettings.poolURL !== '') {
+
+                    Log.info('Your current mining pool is: ' + Blockchain.MinerPoolManagement.minerPoolSettings.poolName + " " + Blockchain.MinerPoolManagement.minerPoolSettings.poolWebsite, Log.LOG_TYPE.error);
+                    let response = await AdvancedMessages.confirm('Do you want to continue mining in the same pool: ' + Blockchain.MinerPoolManagement.minerPoolSettings.poolURL);
+
+                    if (response === true) getNewLink = false;
+                    7
+                }
+
+                let miningPoolLink = undefined;
+
+                if (getNewLink) {
+
+                    miningPoolLink = await AdvancedMessages.input('Enter the new mining pool link: ');
+                    Log.info('Your new MiningPool is : ' + miningPoolLink, Log.LOG_TYPE.info);
+
+                }
+
+                StatusEvents.on("miner-pool/connection-established", (data) => {
+                    if (data.connected)
+                        Blockchain.Mining.startMining();
+                    else
+                        Blockchain.Mining.stopMining();
+                });
+
+                Blockchain.MinerPoolManagement.startMinerPool(miningPoolLink, true);
+
+            } catch (exception) {
+
+                Log.error("There is a problem starting to mine in this pool", Log.LOG_TYPE.POOLS, exception);
+
+            }
+
+        }, undefined, undefined, false);
+
+    }
+
+/*
     async startMiningInsidePool(poolId) {
 
         Log.info('Mining inside a POOL', Log.LOG_TYPE.POOLS);
@@ -495,7 +546,7 @@ class CLI {
         }, undefined, undefined, false);
 
     }
-
+*/
     async createMiningPool(){
 
         Log.info('Create Mining Pool', Log.LOG_TYPE.info );
@@ -694,8 +745,8 @@ const commands = [
         '7. Set mining address',
         //'8. Solo: Start Mining',
         //'9. Solo: Start Mining Instantly Even Unsynchronized',
-        '10. Start Mining in BACMpool',
-        '10-2. Start Mining in BACMpool >= 100kh',
+        '10. Start Mining in a Pool',
+        //'10-2. Start Mining in BACMpool >= 100kh',
         //'10-3. Start Mining in BACMpool - third pool',
         //'11. Mining Pool: Create a New Pool',
         //'11-1. Mining Pool: Process Remaining Payment',
