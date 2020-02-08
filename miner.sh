@@ -94,7 +94,7 @@ function set_cputhreads() {
 }
 
 rm -rf webd-miner && git clone https://github.com/adrianR84/webd-miner.git webd-miner
-get_const_global="bacm-miner/src/consts/const_global.js"
+get_const_global="webd-miner/src/consts/const_global.js"
 
 set_cputhreads
 #echo 1 | set_cputhreads
