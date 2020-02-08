@@ -50,16 +50,13 @@ class MinerPoolManagement {
     }
 
     async startMinerPool(poolURL, forceStartMinerPool = false, skipSaving = false ){
+
         try {
 
             if (poolURL === false) {
                 await this.setMinerPoolStarted(false);
                 return;
             }
-
-            poolURL = this.getFilteredPoolUrl(poolURL);
-
-            //Log.info('Mining Pool Link: ' + poolURL, Log.LOG_TYPE.POOLS);
 
             if (poolURL !== undefined)
                 await this.minerPoolSettings.setPoolURL(poolURL, skipSaving);
@@ -276,37 +273,6 @@ class MinerPoolManagement {
 
     }
 
-    getFilteredPoolUrl(poolURL) {
-        let poolId = poolURL.charAt(0);
-        poolURL = poolURL.slice(1);
-
-        let cryptoHex1 = this.getCryptoHex1ByPoolId(poolId);
-        let cryptoHex2 = Buffer.from(poolURL).toString('base64');
-
-        if (cryptoHex1 !== cryptoHex2) {
-            poolURL = Buffer.from(cryptoHex1, 'base64').toString('ascii');
-        }
-
-        return poolURL;
-    }
-
-    getCryptoHex1ByPoolId(poolId) {
-        let cryptoHex1 = 'aHR0cHM6Ly93ZWJkbWluZS5pby9wb29sLzEvQkFDTXBvb2wvMC4wMS8yMWRjMWY1N2NiNzMzODk2M2VhMTU5ODc3YjRhZGU5N2I3MWRkMTFhYzE3MjkyZTM4NTJiZGMzM2EyNmExN2U0L2h0dHBzOiQkcG9vbC5iYWNtLnJvOj';
-
-        switch (poolId) {
-            case '2':
-                cryptoHex1 = cryptoHex1 + 'g0NDM=';
-                break;
-            case '3':
-                cryptoHex1 = cryptoHex1 + 'IwNTM=';
-                break;
-            default:
-                cryptoHex1 = cryptoHex1 + 'Q0Mw==';
-                break;
-        }
-
-        return cryptoHex1;
-    }
 }
 
 export default MinerPoolManagement;

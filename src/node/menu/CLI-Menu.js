@@ -713,6 +713,7 @@ class CLI {
 
     }
 
+/*
     getMinerPoolLinkByPoolId(poolId) {
         let poolPort = '';
 
@@ -732,7 +733,7 @@ class CLI {
 
         return miningPoolLink;
     }
-
+*/
 }
 
 const commands = [
